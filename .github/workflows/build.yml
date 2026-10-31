@@ -11,7 +11,7 @@ on:
       - 'docs/**'
   pull_request:
     branches: [mega]
-  workflow_dispatch:
+  workflow_dispatch:  # tiz
 
 permissions:
   contents: read
@@ -21,6 +21,32 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  documentation:
+    if: false  # tiz
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.13'
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+        with:
+          version: "latest"
+          enable-cache: false
+      - name: Build documentation
+        run: |
+          cd docs
+          sudo apt install imagemagick zip
+          uv pip install --system -r requirements.txt
+          python ./builds_overview.py
+          make html
+          cd ..
+          zip -r -qq ESPEasy_docs.zip docs/build/*
+      - uses: actions/upload-artifact@v7
+        with:
+          name: Documentation
+          path: ESPEasy_docs.zip
   generate-matrix:
     runs-on: ubuntu-latest
     outputs:
@@ -83,6 +109,7 @@ jobs:
   # Package all ESP82xx and ESP32 into a single ESPEasy-all-Binaries-<date>_PR#<pr_nr>_<runnr>.zip
   combine_package:
     needs: build
+    if: false  # tiz
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
