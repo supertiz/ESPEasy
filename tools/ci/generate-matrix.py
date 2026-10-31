@@ -37,6 +37,10 @@ def filter_jobs(jobs, ignore=("spec_",)):
         if job["env"].startswith(ignore):
             continue
 
+        # tiz
+        if job["env"] not in ("custom_ESP32s3_4M316k",):
+            continue
+
         yield job
 
 
